@@ -1,0 +1,36 @@
+import ijson
+import json
+from decimal import Decimal
+
+Specify the path to your JSON file
+file_path = 'A:\Aetna TX\2023-02-09_f542d11b-45c4-4e36-a1ff-76d427179dde_Aetna-Life-Insurance-Company.json'
+
+Initialize a list to store the records
+records_sample = []
+
+Open the JSON file and create an ijson parser
+with open(file_path, 'r') as file:
+    # Extract in_network objects one by one
+    in_network_objects = ijson.items(file, 'in_network.item')
+
+Fetch the first 100 in_network objects
+    for i, obj in enumerate(in_network_objects):
+        records_sample.append(obj)
+        if i+1 == 100:
+            break
+
+Specify the path to your new JSON file
+output_file_path = 'A:\Aetna TX\sampled_aetna_in-network-rates.json'
+
+Define a custom function to handle Decimal objects
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
+
+Write the sampled records to the new JSON file
+with open(output_file_path, 'w') as file:
+    json.dump(records_sample, file, indent=4, default=decimal_default)
+
+Notify the user that the process is complete
+print(f'The first 100 records have been written to: {output_file_path}')
